@@ -27,17 +27,18 @@ namespace Chat.Api.Repositories
         }
 
         public async Task<User> GetUserById(Guid Id)
-        {
+        { 
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == Id);
-            if (user == null) 
-            throw new UserNotFoundExeption();
-
+            if (user is null)
+                throw new UserNotFoundExeption();
+        
             return user;
         }
 
         public async Task<User?> GetUserByUserName(string username)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.userName == username);  
+            var user = await _context.Users.AsNoTracking()
+     .SingleOrDefaultAsync(u => u.userName == username);
             return user;
         }
 
