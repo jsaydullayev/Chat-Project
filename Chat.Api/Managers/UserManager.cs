@@ -9,11 +9,15 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Chat.Api.Managers
 {
-    public class UserManager(UnitOfWork unitOfWork)
+    public class UserManager
     {
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
+        public UserManager(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
-        public async Task<List<UserDto>> GetAllUsers(CreateUserModel model)
+        public async Task<List<UserDto>>? GetAllUsers()
         {
             var users = await _unitOfWork.UserRepository.GetAllUsers();
             return users.ParseToDtos();
@@ -50,6 +54,7 @@ namespace Chat.Api.Managers
             var result = new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash,model.Password);
             if (result == PasswordVerificationResult.Failed)
                 throw new Exception("Invalid password");
+            _unitOfWork.ChatRepository.GetAllChats();
             return "Login successfully";
         }
 
