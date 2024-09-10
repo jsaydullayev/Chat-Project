@@ -3,6 +3,7 @@
     public class UserChat
     {
         public Guid Id { get; set; }
+        public Guid ToUserId { get; set; }
         public Guid UserId { get; set; }
         public User? User { get; set; } 
         public Guid ChatId { get; set; }

@@ -22,27 +22,27 @@ namespace Chat.Api.Managers
             var users = await _unitOfWork.UserRepository.GetAllUsers();
             return users.ParseToDtos();
         }
-        
+
         public async Task<UserDto> GetUserById(Guid userId)
         {
             var user = await _unitOfWork.UserRepository.GetUserById(userId);
             return user.ParseToDto();
         }
-        
+
         public async Task<UserDto> Register(CreateUserModel model)
         {
             await CheckForExist(model.UserName);
             var user = new User()
             {
-              FirstName = model.FirstName,
-              LastName = model.LastName,
-              userName = model.UserName,
-              Gender = GetGender(model.Gender)
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                userName = model.UserName,
+                Gender = GetGender(model.Gender)
             };
             var passwordHash = new PasswordHasher<User>().HashPassword(user, model.Password);
             user.PasswordHash = passwordHash;
             await _unitOfWork.UserRepository.AddUser(user);
-            
+
             return user.ParseToDto();
         }
 
@@ -51,7 +51,7 @@ namespace Chat.Api.Managers
             var user = await _unitOfWork.UserRepository.GetUserByUserName(model.Username);
             if (user is null)
                 throw new Exception("Username is invalid");
-            var result = new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash,model.Password);
+            var result = new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, model.Password);
             if (result == PasswordVerificationResult.Failed)
                 throw new Exception("Invalid password");
             _unitOfWork.ChatRepository.GetAllChats();
@@ -61,19 +61,33 @@ namespace Chat.Api.Managers
         private async Task CheckForExist(string username)
         {
             var user = await _unitOfWork.UserRepository.GetUserByUserName(username);
-            if (user is not null) 
+            if (user is not null)
             {
                 throw new UserExistException();
             }
         }
-        
+
         private string GetGender(string gender)
         {
-            var normalizedGender = gender.ToLower();
-            return (normalizedGender == UserConstants.Male || normalizedGender == UserConstants.Female)
-                ? gender
-                : UserConstants.Male;
+
+            var checkingForGenderExist = gender.ToLower() == UserConstants.Male
+                                         || gender.ToLower() == UserConstants.Female;
+
+
+            return checkingForGenderExist ? gender : UserConstants.Male;
         }
 
+        public async Task<UserDto> UpdateBio(Guid userId, string bio)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserById(userId);
+            if (!string.IsNullOrEmpty(bio))
+            {
+
+                user.Bio = bio;
+                await _unitOfWork.UserRepository.UpdateUser(user);
+            }
+            return user.ParseToDto();
+        }
     }
+
 }

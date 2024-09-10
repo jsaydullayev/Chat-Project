@@ -9,5 +9,9 @@ namespace Chat.Api.Repositories
 
         private IChatRepository? _chatRepository { get; }
         public IChatRepository ChatRepository => _chatRepository ?? new ChatRepository(context);
+
+        private IUserChatRepository? _userChatRepository { get; }
+
+        public IUserChatRepository UserChatRepository => _userChatRepository ?? new UserChatRepository(context);
     }
 }
