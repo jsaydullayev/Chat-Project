@@ -16,7 +16,7 @@ public class User
     [Required]
     public string Gender { get; set; }
     public string? Bio {  get; set; }
-    public string? PhotoUrl { get; set; }
+    public string? PhotoData { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public byte? Age { get; set; }
     public List<UserChat>? userChats { get; set; }

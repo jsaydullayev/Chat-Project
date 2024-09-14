@@ -1,6 +1,8 @@
 ﻿using Chat.Api.Exeptions;
 using Chat.Api.Managers;
 using Chat.Api.Models.UserModels;
+using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.Api.Controllers
@@ -10,12 +12,14 @@ namespace Chat.Api.Controllers
     public class UsersController(UserManager userManager) : ControllerBase
     {
         private readonly UserManager _userManager = userManager;
+        
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userManager.GetAllUsers();
             return Ok(users);
         }
+        
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetAllUserById(Guid userId)
         {
@@ -33,16 +37,25 @@ namespace Chat.Api.Controllers
                 return BadRequest(e.Message);
             }
         }
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register(CreateUserModel model)
         {
             var result = await _userManager.Register(model);
             return Ok(result);
         }
+        
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody]LoginModel model)
         {
             var result = await _userManager.Login(model);
+            return Ok(result);
+        }
+
+        [HttpPost("Add-Or-Update-UserPhoto")]
+        public async Task<IActionResult> AddOrUpdateUserPhoto([FromForm] IFormFile file)
+        {
+            var result = _userManager.AddOrUpdateFile(file);
             return Ok(result);
         }
     }

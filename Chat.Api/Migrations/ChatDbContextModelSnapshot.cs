@@ -34,7 +34,7 @@ namespace Chat.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("chats");
+                    b.ToTable("Chats");
                 });
 
             modelBuilder.Entity("Chat.Api.Entities.Content", b =>
@@ -103,7 +103,7 @@ namespace Chat.Api.Migrations
 
                     b.HasIndex("ContentId");
 
-                    b.ToTable("messages");
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Chat.Api.Entities.User", b =>
@@ -145,7 +145,7 @@ namespace Chat.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("users");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Chat.Api.Entities.UserChat", b =>
@@ -157,6 +157,9 @@ namespace Chat.Api.Migrations
                     b.Property<Guid>("ChatId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("ToUserId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -166,7 +169,7 @@ namespace Chat.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("userChats");
+                    b.ToTable("UserChats");
                 });
 
             modelBuilder.Entity("Chat.Api.Entities.Message", b =>

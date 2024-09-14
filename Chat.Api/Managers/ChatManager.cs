@@ -58,8 +58,23 @@ namespace Chat.Api.Managers
                 ChatId = chat.Id,
                 ToUserId = fromUserId
             };
+
+            var toUserChat = new UserChat()
+            {
+                UserId = toUserId,
+                ChatId = chat.Id,
+                ToUserId = fromUserId
+            };
+
             await _unitOfWork.UserChatRepository.AdduserChat(fromUserChat);
             return chat.ParseToDto();
+        }
+
+        public async Task<string> DeleteChat(Guid userId, Guid chatId)
+        {
+            var chat = await _unitOfWork.ChatRepository.GetUserChatById(userId,chatId);
+            await _unitOfWork.ChatRepository.DeleteChat(chat);
+            return "Deleted successfuly";
         }
     }
 }

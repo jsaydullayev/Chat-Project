@@ -88,6 +88,12 @@ namespace Chat.Api.Managers
             }
             return user.ParseToDto();
         }
+
+        public async Task<string> AddOrUpdateFile(IFormFile file)
+        {
+            var type = file.ContentType;
+            return type;
+        }
     }
 
 }
