@@ -1,6 +1,7 @@
 ﻿using Chat.Api.DTOs;
 using Chat.Api.Entities;
 using Mapster;
+using System.Globalization;
 
 namespace Chat.Api.Extentions
 {
@@ -33,6 +34,22 @@ namespace Chat.Api.Extentions
                 return dtos;
 
             dtos.AddRange(chats.Select(chat => chat.ParseToDto()));
+            return dtos;
+        }
+
+        public static MessageDto ParseToDto(this Message message)
+        {
+            MessageDto dto = message.Adapt<MessageDto>();
+            return dto;
+        }
+
+        public static List<MessageDto> ParseToDtos(this List<Message>? messages)
+        {
+            var dtos = new List<MessageDto>();
+            if(messages == null || messages.Count == 0)
+                return dtos;
+
+            dtos.AddRange(messages.Select(messages => messages.ParseToDto()));
             return dtos;
         }
     }

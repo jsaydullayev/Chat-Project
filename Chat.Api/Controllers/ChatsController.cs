@@ -12,12 +12,14 @@ namespace Chat.Api.Controllers
         {
             _chatManager = chatManager;
         }
-        [HttpGet]
+        
+        [HttpGet("GetAllChats")]
         public async Task<IActionResult> GetUserChats(Guid userId)
         {
             var chats = await _chatManager.GetAllUserChats(userId);
             return Ok(chats);
         }
+
         [HttpPost]
         public async Task<IActionResult> AddOrEnterChat(Guid userId, [FromBody] Guid toUserId)
         {

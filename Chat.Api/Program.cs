@@ -62,8 +62,17 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<IUserChatRepository, UserChatRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 builder.Services.AddScoped<UserManager>();
+builder.Services.AddScoped<ChatManager>();
+builder.Services.AddScoped<JwtManager>();
+builder.Services.AddScoped<MessageManager>();
+builder.Services.AddScoped<MemoryCacheManager>();
+builder.Services.AddScoped<UserHelper>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDbContext<ChatDbContext>(options =>
 {
@@ -71,12 +80,21 @@ builder.Services.AddDbContext<ChatDbContext>(options =>
 });
 var app = builder.Build();
 
+app.UseCors(options =>
+{
+    options.AllowAnyHeader();
+    options.AllowAnyMethod();
+    options.AllowAnyOrigin();
+});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 

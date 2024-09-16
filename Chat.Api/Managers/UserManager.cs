@@ -1,10 +1,12 @@
 ﻿using Chat.Api.Constants;
 using Chat.Api.DTOs;
 using Chat.Api.Entities;
-using Chat.Api.Extensions;
+using Chat.Api.Exceptions;
 using Chat.Api.Extentions;
+using Chat.Api.Helpers;
 using Chat.Api.Models.UserModels;
 using Chat.Api.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
 namespace Chat.Api.Managers
@@ -12,9 +14,14 @@ namespace Chat.Api.Managers
     public class UserManager
     {
         private readonly IUnitOfWork _unitOfWork;
-        public UserManager(IUnitOfWork unitOfWork)
+        private readonly JwtManager _jwtManager;
+        private readonly MemoryCacheManager _memoryCacheManager;
+        private const string Key = "users";
+        public UserManager(IUnitOfWork unitOfWork, JwtManager jwtManager, MemoryCacheManager memoryCacheManager)
         {
             _unitOfWork = unitOfWork;
+            _jwtManager = jwtManager;
+            _memoryCacheManager = memoryCacheManager;
         }
 
         public async Task<List<UserDto>>? GetAllUsers()
@@ -36,9 +43,16 @@ namespace Chat.Api.Managers
             {
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                userName = model.UserName,
-                Gender = GetGender(model.Gender)
+                UserName = model.UserName,
+                Gender = GetGender(model.Gender),
+                Role = UserConstants.UserRole
             };
+
+            if (user.UserName == "super-admin")
+            {
+                user.Role = UserConstants.AdminRole;
+            }
+
             var passwordHash = new PasswordHasher<User>().HashPassword(user, model.Password);
             user.PasswordHash = passwordHash;
             await _unitOfWork.UserRepository.AddUser(user);
@@ -54,8 +68,24 @@ namespace Chat.Api.Managers
             var result = new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, model.Password);
             if (result == PasswordVerificationResult.Failed)
                 throw new Exception("Invalid password");
-            _unitOfWork.ChatRepository.GetAllChats();
-            return "Login successfully";
+            if (string.IsNullOrEmpty(user.Role))
+            {
+                user.Role = UserConstants.UserRole;
+                await _unitOfWork.UserRepository.UpdateUser(user);
+            }
+            var token = _jwtManager.GenerateToken(user);
+            return token;
+        }
+
+        public async Task<byte[]> AddOrUpdatePhoto(Guid userId, IFormFile file)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserById(userId);
+            StaticHelper.IsPhoto(file);
+            var data = StaticHelper.GetData(file);
+            user.PhotoData = data;
+            await _unitOfWork.UserRepository.UpdateUser(user);
+            await Set();
+            return data;
         }
 
         private async Task CheckForExist(string username)
@@ -63,7 +93,7 @@ namespace Chat.Api.Managers
             var user = await _unitOfWork.UserRepository.GetUserByUserName(username);
             if (user is not null)
             {
-                throw new UserExistException();
+                throw new UserExistExeption();
             }
         }
 
@@ -89,11 +119,63 @@ namespace Chat.Api.Managers
             return user.ParseToDto();
         }
 
-        public async Task<string> AddOrUpdateFile(IFormFile file)
+        public async Task<UserDto> UpdateUserGeneralInfo(Guid userId, UpdateUserGeneralInfo info)
         {
-            var type = file.ContentType;
-            return type;
+            var user = await _unitOfWork.UserRepository.GetUserById(userId);
+            bool check = false;
+            if (!string.IsNullOrEmpty(info.Firstname))
+            {
+                user.FirstName = info.Firstname;
+                check = true;
+            }
+
+            if (!string.IsNullOrEmpty(info.Lastname))
+            {
+                user.LastName = info.Lastname;
+                check = true;
+            }
+
+            if (!string.IsNullOrEmpty(info.Age))
+            {
+
+                try
+                {
+                    byte age = byte.Parse(info.Age);
+
+                    user.Age = age;
+                    check = true;
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Age must be number");
+                }
+            }
+
+            if (check)
+            {
+                await _unitOfWork.UserRepository.UpdateUser(user);
+                await Set();
+            }
+
+            return user.ParseToDto();
         }
+
+        public async Task<UserDto> UpdateUserName(Guid userId, UpdateUserNameModel model)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserById(userId);
+            await CheckForExist(model.UserName);
+            user.UserName = model.UserName;
+            await _unitOfWork.UserRepository.UpdateUser(user);
+            await Set();
+            return user.ParseToDto();
+        }
+
+        private async Task Set()
+        {
+            var users = await _unitOfWork.UserRepository.GetAllUsers();
+            _memoryCacheManager.GetOrUpdateDtos(Key, users.ParseToDtos);
+        }
+         
     }
 
 }

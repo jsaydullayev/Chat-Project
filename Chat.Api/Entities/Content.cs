@@ -8,7 +8,6 @@ namespace Chat.Api.Entities
         public string? Caption { get; set; }
         [Required]
         public string FileUrl { get; set; }
-        [Required]
         public string? Type { get; set; }
         public int MessageId { get; set; }  
     }

@@ -9,7 +9,6 @@ namespace Chat.Api.Entities
         public Guid FromUserId { get; set; }
         [Required]
         public string FromUserName { get; set; }
-
         public Guid ChatId { get; set; }
         public Chat Chat { get; set; }
 

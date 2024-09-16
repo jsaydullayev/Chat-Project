@@ -10,14 +10,15 @@ public class User
     public string FirstName { get; set; }
     public string? LastName { get; set; }
     [Required]
-    public string userName { get; set; }
+    public string UserName { get; set; }
     [Required]
     public string PasswordHash { get; set; }
     [Required]
     public string Gender { get; set; }
     public string? Bio {  get; set; }
-    public string? PhotoData { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public byte[]? PhotoData{ get; set; }
+    public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow;
     public byte? Age { get; set; }
-    public List<UserChat>? userChats { get; set; }
+    public string? Role { get; set; }
+    public List<UserChat>? UserChats { get; set; }
 }
