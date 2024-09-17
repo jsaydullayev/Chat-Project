@@ -1,7 +1,9 @@
 ﻿using Chat.Api.Exeptions;
+using Chat.Api.Helpers;
 using Chat.Api.Managers;
 using Chat.Api.Models.UserModels;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,9 +11,16 @@ namespace Chat.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UsersController(UserManager userManager) : ControllerBase
+public class UsersController : ControllerBase
 {
-    private readonly UserManager _userManager = userManager;
+    public UsersController(UserManager userManager, UserHelper userHelper)
+    {
+        _userManager = userManager;
+        _userHelper = userHelper;
+    }
+    private readonly UserManager _userManager;
+    private readonly UserHelper _userHelper;
+    private Guid UserId => _userHelper.GetUserId();
     
     [HttpGet]
     public async Task<IActionResult> GetAllUsers()
@@ -52,10 +61,11 @@ public class UsersController(UserManager userManager) : ControllerBase
         return Ok(result);
     }
 
+    [Authorize(Roles ="admin,user")]
     [HttpPost("Add-Or-Update-UserPhoto")]
     public async Task<IActionResult> AddOrUpdateUserPhoto([FromForm] FileClass model)
     {
-        var result = _userManager.AddOrUpdatePhoto(model.File);
+        var result = _userManager.AddOrUpdatePhoto(UserId, model.File);
         return Ok(result);
     }
 }

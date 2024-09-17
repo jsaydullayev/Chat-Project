@@ -39,8 +39,10 @@ namespace Chat.Api.Managers
             {
                 return chat?.ParseToDto();
             }
+
             var fromUser = await _unitOfWork.UserRepository.GetUserById(fromUserId);
             var toUser = await _unitOfWork.UserRepository.GetUserById(toUserId);
+            
             List<string> names =
                 [
                     StaticHelper.GetFullName(fromUser.FirstName, fromUser.LastName),
@@ -59,6 +61,8 @@ namespace Chat.Api.Managers
                 ToUserId = fromUserId
             };
 
+            await _unitOfWork.UserChatRepository.AddUserChat(fromUserChat);
+
             var toUserChat = new UserChat()
             {
                 UserId = toUserId,
@@ -66,12 +70,13 @@ namespace Chat.Api.Managers
                 ToUserId = fromUserId
             };
 
-            await _unitOfWork.UserChatRepository.AdduserChat(fromUserChat);
+            await _unitOfWork.UserChatRepository.AddUserChat(toUserChat);
             return chat.ParseToDto();
         }
 
         public async Task<string> DeleteChat(Guid userId, Guid chatId)
         {
+            var user = await _unitOfWork.UserRepository.GetUserById(userId);
             var chat = await _unitOfWork.ChatRepository.GetUserChatById(userId,chatId);
             await _unitOfWork.ChatRepository.DeleteChat(chat);
             return "Deleted successfuly";

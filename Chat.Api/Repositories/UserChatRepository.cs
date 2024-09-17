@@ -1,5 +1,6 @@
 ﻿using Chat.Api.Context;
 using Chat.Api.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Api.Repositories
 {
@@ -10,7 +11,7 @@ namespace Chat.Api.Repositories
         {
             _chatDbContext = chatDbContext;
         }
-        public async Task AdduserChat(UserChat userChat)
+        public async Task AddUserChat(UserChat userChat)
         {
             await _chatDbContext.UserChats.AddAsync(userChat);
             await _chatDbContext.SaveChangesAsync();
@@ -20,6 +21,15 @@ namespace Chat.Api.Repositories
         {
             _chatDbContext.UserChats.Remove(userChat);
              await _chatDbContext.SaveChangesAsync();
+        }
+
+        public async Task GetUserChat(Guid userId, Guid chatId)
+        {
+            var userChat = await _chatDbContext.UserChats
+                .SingleOrDefaultAsync(u => u.UserId == userId &&
+                u.ChatId == chatId);
+            if (userChat is null)
+                throw new Exception("Not found chat");
         }
     }
 }

@@ -2,6 +2,7 @@
 using Chat.Api.DTOs;
 using Chat.Api.Entities;
 using Chat.Api.Exceptions;
+using Chat.Api.Exeptions;
 using Chat.Api.Extentions;
 using Chat.Api.Helpers;
 using Chat.Api.Models.UserModels;
@@ -26,13 +27,35 @@ namespace Chat.Api.Managers
 
         public async Task<List<UserDto>>? GetAllUsers()
         {
+            var dtos = _memoryCacheManager.GetDtos(Key);
+            if(dtos is not null)
+            {
+                return (List<UserDto>)dtos;
+            }
+
             var users = await _unitOfWork.UserRepository.GetAllUsers();
+            await Set();
             return users.ParseToDtos();
         }
 
         public async Task<UserDto> GetUserById(Guid userId)
         {
+            var dtos = _memoryCacheManager.GetDtos(Key);
+            if(dtos is not null)
+            {
+                List<UserDto> userDtos = (List<UserDto>)dtos;
+                
+                var userDto = userDtos.SingleOrDefault(u => u.Id == userId);
+
+                if (userDto is null)
+                {
+                    throw new UserNotFoundExeption();
+                }
+                return userDto;
+            }
+
             var user = await _unitOfWork.UserRepository.GetUserById(userId);
+            await Set();
             return user.ParseToDto();
         }
 
@@ -116,6 +139,7 @@ namespace Chat.Api.Managers
                 user.Bio = bio;
                 await _unitOfWork.UserRepository.UpdateUser(user);
             }
+            await Set();
             return user.ParseToDto();
         }
 

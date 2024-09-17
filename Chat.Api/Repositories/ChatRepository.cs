@@ -41,16 +41,24 @@ namespace Chat.Api.Repositories
 
         public async Task<List<Entities.Chat>> GetAllUserChats(Guid userId)
         {
-            var userchats = await _context.UserChats.Where(u => u.UserId == userId).ToListAsync();
+            var userchats = await _context.UserChats.
+                Where(u => u.UserId == userId).
+                ToListAsync();
+
             List<Entities.Chat> sortedChats = new();
+            
             var check = userchats == null || userchats.Count == 0;
+            
             if (check)
             {
                 return sortedChats;
             }
             foreach (var chat in userchats)
             {
-                var sortedChat = await _context.Chats.SingleAsync(ch => ch.Id == chat.ChatId);
+                var sortedChat = await _context.Chats.
+                    Include(ch => ch.Messages)!
+                    .ThenInclude(m => m.Content)
+                    .SingleAsync(ch => ch.Id == chat.ChatId);
                 sortedChats.Add(sortedChat);
             }
             return sortedChats;
@@ -58,12 +66,17 @@ namespace Chat.Api.Repositories
 
         public async Task<Entities.Chat> GetUserChatById(Guid chatId, Guid userId)
         {
-            var userChat = await _context.UserChats.SingleOrDefaultAsync(uc => uc.UserId == userId && uc.ChatId == userId);
+            var userChat = await _context.UserChats.
+                SingleOrDefaultAsync
+                (uc => uc.UserId == userId && uc.ChatId == userId);
+            
             if (userChat is null)
             {
                 throw new ChatNotFoundException();
             }
-            var chat = await _context.Chats.SingleAsync(c => c.Id == userChat.ChatId);
+
+            var chat = await _context.Chats.
+                SingleAsync(c => c.Id == userChat.ChatId);
             return chat;
         }
 

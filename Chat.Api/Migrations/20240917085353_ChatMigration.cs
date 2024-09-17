@@ -33,7 +33,7 @@ namespace Chat.Api.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Caption = table.Column<string>(type: "text", nullable: true),
                     FileUrl = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<string>(type: "text", nullable: true),
                     MessageId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -48,13 +48,14 @@ namespace Chat.Api.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: true),
-                    userName = table.Column<string>(type: "text", nullable: false),
+                    UserName = table.Column<string>(type: "text", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
                     Gender = table.Column<string>(type: "text", nullable: false),
                     Bio = table.Column<string>(type: "text", nullable: true),
-                    PhotoUrl = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Age = table.Column<byte>(type: "smallint", nullable: true)
+                    PhotoData = table.Column<byte[]>(type: "bytea", nullable: true),
+                    CreatedDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Age = table.Column<byte>(type: "smallint", nullable: true),
+                    Role = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -118,6 +119,11 @@ namespace Chat.Api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Age", "Bio", "CreatedDateTime", "FirstName", "Gender", "LastName", "PasswordHash", "PhotoData", "Role", "UserName" },
+                values: new object[] { new Guid("8ecccac2-b3f5-402c-9803-2c2621fc1989"), null, null, new DateTime(2024, 9, 17, 8, 53, 53, 63, DateTimeKind.Utc).AddTicks(4456), "Admin", "male", "Admin", "AQAAAAIAAYagAAAAEJn7LgN1qTHVRejV8Y+LraCS7tZ08Rm7C4+xhljUkSNXxWPEvQ/jJtngeJixXco0Qw==", null, "admin", "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ChatId",

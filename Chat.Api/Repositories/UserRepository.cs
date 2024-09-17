@@ -38,7 +38,7 @@ namespace Chat.Api.Repositories
         public async Task<User?> GetUserByUserName(string username)
         {
             var user = await _context.Users.AsNoTracking()
-     .SingleOrDefaultAsync(u => u.userName == username);
+     .SingleOrDefaultAsync(u => u.UserName == username);
             return user;
         }
 

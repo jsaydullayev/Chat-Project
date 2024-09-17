@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chat.Api.Migrations
 {
     [DbContext(typeof(ChatDbContext))]
-    [Migration("20240910134912_ChatMigration")]
+    [Migration("20240917085353_ChatMigration")]
     partial class ChatMigration
     {
         /// <inheritdoc />
@@ -59,7 +59,6 @@ namespace Chat.Api.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Type")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -121,7 +120,7 @@ namespace Chat.Api.Migrations
                     b.Property<string>("Bio")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FirstName")
@@ -139,16 +138,32 @@ namespace Chat.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("PhotoUrl")
+                    b.Property<byte[]>("PhotoData")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Role")
                         .HasColumnType("text");
 
-                    b.Property<string>("userName")
+                    b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("8ecccac2-b3f5-402c-9803-2c2621fc1989"),
+                            CreatedDateTime = new DateTime(2024, 9, 17, 8, 53, 53, 63, DateTimeKind.Utc).AddTicks(4456),
+                            FirstName = "Admin",
+                            Gender = "male",
+                            LastName = "Admin",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJn7LgN1qTHVRejV8Y+LraCS7tZ08Rm7C4+xhljUkSNXxWPEvQ/jJtngeJixXco0Qw==",
+                            Role = "admin",
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("Chat.Api.Entities.UserChat", b =>
@@ -203,7 +218,7 @@ namespace Chat.Api.Migrations
                         .IsRequired();
 
                     b.HasOne("Chat.Api.Entities.User", "User")
-                        .WithMany("userChats")
+                        .WithMany("UserChats")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -222,7 +237,7 @@ namespace Chat.Api.Migrations
 
             modelBuilder.Entity("Chat.Api.Entities.User", b =>
                 {
-                    b.Navigation("userChats");
+                    b.Navigation("UserChats");
                 });
 #pragma warning restore 612, 618
         }

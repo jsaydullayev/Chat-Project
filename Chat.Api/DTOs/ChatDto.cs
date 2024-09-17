@@ -7,6 +7,6 @@ namespace Chat.Api.DTOs
         public Guid Id { get; set; }
         public List<string>? ChatNames { get; set; }
         public List<UserChatDto>? UserChats { get; set; }
-        public List<MessageDto> Messages { get; set; }
+        public List<MessageDto>? Messages { get; set; }
     }
 }

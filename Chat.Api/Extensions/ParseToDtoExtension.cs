@@ -49,7 +49,7 @@ namespace Chat.Api.Extentions
             if(messages == null || messages.Count == 0)
                 return dtos;
 
-            dtos.AddRange(messages.Select(messages => messages.ParseToDto()));
+            dtos.AddRange(messages.Select(message => message.ParseToDto()));
             return dtos;
         }
     }
