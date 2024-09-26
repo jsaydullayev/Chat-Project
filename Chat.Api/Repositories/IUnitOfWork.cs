@@ -2,7 +2,7 @@
 {
     public interface IUnitOfWork
     {
-        IUserRepository UserRepository { get; }
+        IuserIntegration userIntegration { get; }
         IChatRepository ChatRepository { get; }
         IUserChatRepository UserChatRepository { get; }
         IMessageRepository MessageRepository { get; }

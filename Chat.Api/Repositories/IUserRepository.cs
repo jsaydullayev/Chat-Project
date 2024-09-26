@@ -2,7 +2,7 @@
 
 namespace Chat.Api.Repositories
 {
-    public interface IUserRepository
+    public interface IuserIntegration
     {
         Task<List<User>> GetAllUsers();
         Task<User?> GetUserByUserName(string username);

@@ -60,7 +60,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IuserIntegration, userIntegration>();
 builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddScoped<IUserChatRepository, UserChatRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();

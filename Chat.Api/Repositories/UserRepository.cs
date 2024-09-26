@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Api.Repositories
 {
-    public class UserRepository(ChatDbContext context) : IUserRepository
+    public class userIntegration(ChatDbContext context) : IuserIntegration
     {
         private readonly ChatDbContext _context = context;
         public async Task AddUser(User user)
@@ -37,8 +37,8 @@ namespace Chat.Api.Repositories
 
         public async Task<User?> GetUserByUserName(string username)
         {
-            var user = await _context.Users.AsNoTracking()
-     .SingleOrDefaultAsync(u => u.UserName == username);
+            var user = await _context.Users
+     .SingleOrDefaultAsync(u => u.UserName.ToLower() == username.ToLower());
             return user;
         }
 

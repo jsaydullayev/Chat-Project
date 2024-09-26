@@ -40,8 +40,8 @@ namespace Chat.Api.Managers
                 return chat?.ParseToDto();
             }
 
-            var fromUser = await _unitOfWork.UserRepository.GetUserById(fromUserId);
-            var toUser = await _unitOfWork.UserRepository.GetUserById(toUserId);
+            var fromUser = await _unitOfWork.userIntegration.GetUserById(fromUserId);
+            var toUser = await _unitOfWork.userIntegration.GetUserById(toUserId);
             
             List<string> names =
                 [
@@ -76,7 +76,7 @@ namespace Chat.Api.Managers
 
         public async Task<string> DeleteChat(Guid userId, Guid chatId)
         {
-            var user = await _unitOfWork.UserRepository.GetUserById(userId);
+            var user = await _unitOfWork.userIntegration.GetUserById(userId);
             var chat = await _unitOfWork.ChatRepository.GetUserChatById(userId,chatId);
             await _unitOfWork.ChatRepository.DeleteChat(chat);
             return "Deleted successfuly";

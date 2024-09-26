@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chat.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class ChatMigration : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -123,7 +123,7 @@ namespace Chat.Api.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Age", "Bio", "CreatedDateTime", "FirstName", "Gender", "LastName", "PasswordHash", "PhotoData", "Role", "UserName" },
-                values: new object[] { new Guid("8ecccac2-b3f5-402c-9803-2c2621fc1989"), null, null, new DateTime(2024, 9, 17, 8, 53, 53, 63, DateTimeKind.Utc).AddTicks(4456), "Admin", "male", "Admin", "AQAAAAIAAYagAAAAEJn7LgN1qTHVRejV8Y+LraCS7tZ08Rm7C4+xhljUkSNXxWPEvQ/jJtngeJixXco0Qw==", null, "admin", "admin" });
+                values: new object[] { new Guid("ad5bf227-6648-42ba-8a36-20dab607db2c"), null, null, new DateTime(2024, 9, 17, 15, 41, 9, 141, DateTimeKind.Utc).AddTicks(7694), "Admin", "male", "Admin", "AQAAAAIAAYagAAAAEPfDtv9rI7H1SEWnwvWFpRXHkQmRNrUZnKXKlOLHDmAWPwiq2C8hYRyJde52LZOArA==", null, "admin", "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ChatId",

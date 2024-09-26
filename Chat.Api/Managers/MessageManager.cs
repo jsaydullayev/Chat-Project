@@ -48,7 +48,7 @@ namespace Chat.Api.Managers
         {
             await CheckingUserInChat(userId: userId, chatId: chatId);
 
-            var user = await _unitOfWork.UserRepository.GetUserById(userId);
+            var user = await _unitOfWork.userIntegration.GetUserById(userId);
 
             var message = new Message()
             {
@@ -63,7 +63,7 @@ namespace Chat.Api.Managers
 
         public async Task<MessageDto> SendFileMessage(Guid userId, Guid chatId, FileModel model)
         {
-            var user = await _unitOfWork.UserRepository.GetUserById(userId);
+            var user = await _unitOfWork.userIntegration.GetUserById(userId);
 
             await CheckingUserInChat(userId: userId, chatId: chatId);
 
