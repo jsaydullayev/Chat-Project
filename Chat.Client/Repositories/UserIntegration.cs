@@ -53,6 +53,24 @@ namespace Chat.Client.Repositories
             return new(statusCode, "Something wrong");
         }
 
+        public async Task<Tuple<HttpStatusCode, object>> GetProfile()
+        {
+            var url = "api/user/profile";
+
+            var result = await _httpClient.GetAsync(url);
+            var statusCode = result.StatusCode;
+            object? response;
+            if (statusCode == HttpStatusCode.OK)
+            {
+                response = await result.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                response = await result.Content.ReadAsStringAsync();
+            }
+            return new(statusCode,response);
+        }
+
         public async Task<Tuple<HttpStatusCode, string>> Login(LoginModel model)
         {
             string url = "api/Users/login";
