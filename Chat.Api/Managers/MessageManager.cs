@@ -38,7 +38,7 @@ namespace Chat.Api.Managers
             return message.ParseToDto();
         }
 
-        public async Task<MessageDto> GetChatMessageId(Guid userId, int messageId)
+        public async Task<MessageDto> GetChatMessageById(Guid userId, int messageId)
         {
             var message = await _unitOfWork.MessageRepository.GetChatMessageById(userId, messageId);
             return message.ParseToDto();

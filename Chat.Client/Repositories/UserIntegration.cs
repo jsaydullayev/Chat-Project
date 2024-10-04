@@ -2,6 +2,7 @@
 using Chat.Client.DTOs;
 using Chat.Client.Models;
 using Chat.Client.Repositories.Contracts;
+using Chat.Client.Service;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -13,6 +14,7 @@ namespace Chat.Client.Repositories
 
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorageService;
+        private readonly StorageService _storageService;
         public UserIntegration(HttpClient httpClient, ILocalStorageService localStorageService)
         {
             _httpClient = httpClient;
@@ -68,7 +70,7 @@ namespace Chat.Client.Repositories
             {
                 response = await result.Content.ReadAsStringAsync();
             }
-            return new(statusCode,response);
+            return new(statusCode, response);
         }
 
         public async Task<Tuple<HttpStatusCode, string>> Login(LoginModel model)
@@ -84,6 +86,7 @@ namespace Chat.Client.Repositories
             return new(statusCode, response);
         }
 
+
         public async Task<Tuple<HttpStatusCode, string>> Register(RegisterModel model)
         {
             string url = "api/Users/register";
@@ -95,6 +98,43 @@ namespace Chat.Client.Repositories
             var response = await result.Content.ReadAsStringAsync();
 
             return new(statusCode, response);
+        }
+
+
+        public async Task<Tuple<HttpStatusCode, object>> UpdateUserGeneralInfo(UpdateGeneralInfo model)
+        {
+            var url = "api/Users/update-user-general-info";
+
+            var token = await _localStorageService.GetItemAsStringAsync("token");
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+            var result = await _httpClient.PostAsJsonAsync(url, model);
+
+            var statusCode = result.StatusCode;
+            
+            if(statusCode == HttpStatusCode.OK)
+            {
+                var response = await result.Content.ReadFromJsonAsync<UserDto>();
+                return new(statusCode, response);
+            }
+            else
+            {
+                var response = await result.Content.ReadAsStringAsync();
+                return new(statusCode, response);
+            }
+        }
+
+
+        private async Task AddTokenToHeader()
+        {
+            string? token = await _storageService.GetToken();
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
         }
     }
 }

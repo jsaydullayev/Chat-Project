@@ -197,7 +197,7 @@ namespace Chat.Api.Managers
         private async Task Set()
         {
             var users = await _unitOfWork.userIntegration.GetAllUsers();
-            _memoryCacheManager.GetOrUpdateDtos(Key, users.ParseToDtos);
+            _memoryCacheManager.GetOrUpdateDtos(Key, users.ParseToDtos());
         }
          
     }

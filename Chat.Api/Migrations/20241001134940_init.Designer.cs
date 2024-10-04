@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chat.Api.Migrations
 {
     [DbContext(typeof(ChatDbContext))]
-    [Migration("20240917154111_init")]
+    [Migration("20241001134940_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -155,12 +155,12 @@ namespace Chat.Api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ad5bf227-6648-42ba-8a36-20dab607db2c"),
-                            CreatedDateTime = new DateTime(2024, 9, 17, 15, 41, 9, 141, DateTimeKind.Utc).AddTicks(7694),
+                            Id = new Guid("7ff72622-d92e-4404-971e-5dabc3999f55"),
+                            CreatedDateTime = new DateTime(2024, 10, 1, 13, 49, 36, 917, DateTimeKind.Utc).AddTicks(464),
                             FirstName = "Admin",
                             Gender = "male",
                             LastName = "Admin",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPfDtv9rI7H1SEWnwvWFpRXHkQmRNrUZnKXKlOLHDmAWPwiq2C8hYRyJde52LZOArA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFO7DumY20iF8G+qqYMVTkzC0r/CahgflebFUmCqt5avHwYzDkM9UUtH7qW7E8gXDw==",
                             Role = "admin",
                             UserName = "admin"
                         });

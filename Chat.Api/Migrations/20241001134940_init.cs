@@ -123,7 +123,7 @@ namespace Chat.Api.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Age", "Bio", "CreatedDateTime", "FirstName", "Gender", "LastName", "PasswordHash", "PhotoData", "Role", "UserName" },
-                values: new object[] { new Guid("ad5bf227-6648-42ba-8a36-20dab607db2c"), null, null, new DateTime(2024, 9, 17, 15, 41, 9, 141, DateTimeKind.Utc).AddTicks(7694), "Admin", "male", "Admin", "AQAAAAIAAYagAAAAEPfDtv9rI7H1SEWnwvWFpRXHkQmRNrUZnKXKlOLHDmAWPwiq2C8hYRyJde52LZOArA==", null, "admin", "admin" });
+                values: new object[] { new Guid("7ff72622-d92e-4404-971e-5dabc3999f55"), null, null, new DateTime(2024, 10, 1, 13, 49, 36, 917, DateTimeKind.Utc).AddTicks(464), "Admin", "male", "Admin", "AQAAAAIAAYagAAAAEFO7DumY20iF8G+qqYMVTkzC0r/CahgflebFUmCqt5avHwYzDkM9UUtH7qW7E8gXDw==", null, "admin", "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ChatId",

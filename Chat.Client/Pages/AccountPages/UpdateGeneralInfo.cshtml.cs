@@ -1,9 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Components;
 
 namespace Chat.Client.Pages.AccountPages
 {
-    public class UpdateGeneralInfoModel : PageModel
+    public class UpdateGeneralInfoModel : ComponentBase
     {
         public void OnGet()
         {
