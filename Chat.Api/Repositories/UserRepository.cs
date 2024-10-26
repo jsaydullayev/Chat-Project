@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Api.Repositories
 {
-    public class userIntegration(ChatDbContext context) : IuserIntegration
+    public class UserRepository(ChatDbContext context) : IUserRepository
     {
         private readonly ChatDbContext _context = context;
         public async Task AddUser(User user)
@@ -18,6 +18,12 @@ namespace Chat.Api.Repositories
         {
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<CopyOfUser>> GetAllCopyUsers()
+        {
+            var users = await _context.CopyOfUsers.ToListAsync();
+            return users;
         }
 
         public async Task<List<User>> GetAllUsers()
@@ -38,7 +44,7 @@ namespace Chat.Api.Repositories
         public async Task<User?> GetUserByUserName(string username)
         {
             var user = await _context.Users
-     .SingleOrDefaultAsync(u => u.UserName.ToLower() == username.ToLower());
+     .SingleOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());
             return user;
         }
 

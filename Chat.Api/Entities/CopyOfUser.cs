@@ -1,15 +1,15 @@
-﻿namespace Chat.Client.DTOs;
-public class UserDto
+﻿namespace Chat.Api.Entities;
+public class CopyOfUser
 {
     public Guid Id { get; set; }
     public string FirstName { get; set; }
     public string? LastName { get; set; }
-    public string UserName { get; set; }
+    public string Username { get; set; }
+    public string PasswordHash { get; set; }
     public string Gender { get; set; }
     public string? Bio {  get; set; }
     public byte[]? PhotoData { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public byte? Age { get; set; }
     public string? Role { get; set; }
-    //public List<UserChatDto>? UserChats { get; set; }
 }

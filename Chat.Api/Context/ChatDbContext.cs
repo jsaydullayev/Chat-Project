@@ -12,6 +12,7 @@ public class ChatDbContext : DbContext
     public DbSet<Entities.Chat> Chats { get; set; }
     public DbSet<UserChat> UserChats { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<CopyOfUser> CopyOfUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,7 +22,7 @@ public class ChatDbContext : DbContext
             Id = Guid.NewGuid(),
             FirstName = "Admin",
             LastName = "Admin",
-            UserName = "admin",
+            Username = "admin",
             Gender = Constants.UserConstants.Male,
             Role = Constants.UserConstants.AdminRole
         };

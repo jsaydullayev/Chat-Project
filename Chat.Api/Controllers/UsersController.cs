@@ -2,6 +2,7 @@
 using Chat.Api.Helpers;
 using Chat.Api.Managers;
 using Chat.Api.Models.UserModels;
+using Chat.Api.Validators;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,6 +23,7 @@ public class UsersController : ControllerBase
     private readonly UserHelper _userHelper;
     private Guid UserId => _userHelper.GetUserId();
 
+    [Authorize(Roles = "admin,user")]
     [HttpGet]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -29,7 +31,8 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
 
-    [HttpGet("{id:guid}")]
+    [Authorize(Roles ="admin,user")]
+    [HttpGet("profile")]
     public async Task<IActionResult> GetAllUserById(Guid userId)
     {
         try
@@ -48,8 +51,15 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(CreateUserModel model)
+    public async Task<IActionResult> Register([FromBody]CreateUserModel model)
     {
+        var validator = new CreateUserValidator();
+        var state = await validator.ValidateAsync(model);
+        if (!state.IsValid)
+        {
+            return BadRequest(state.Errors);
+        }
+
         var result = await _userManager.Register(model);
         return Ok(result);
     }
@@ -57,8 +67,15 @@ public class UsersController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
-        var result = await _userManager.Login(model);
-        return Ok(result);
+        try
+        {
+            var result = await _userManager.Login(model);
+            return Ok(result);
+        }
+        catch (Exception ex) 
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [Authorize(Roles = "admin,user")]
@@ -94,7 +111,7 @@ public class UsersController : ControllerBase
 
     [Authorize(Roles ="admin,user")]
     [HttpPost("update-username")]
-    public async Task<IActionResult> UpdateUserName([FromBody] UpdateUserNameModel model)
+    public async Task<IActionResult> UpdateUsername([FromBody] UpdateUserNameModel model)
     {
         try
         {
@@ -105,6 +122,13 @@ public class UsersController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
+    }
+
+    [HttpGet("Copy-Users")]
+    public async Task<IActionResult> GetAllCopyUsers()
+    {
+        var users = await _userManager.GetAllCopyUsers();
+        return Ok(users);
     }
 
 

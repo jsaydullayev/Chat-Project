@@ -7,8 +7,9 @@ using Chat.Api.Extentions;
 using Chat.Api.Helpers;
 using Chat.Api.Models.UserModels;
 using Chat.Api.Repositories;
-using Microsoft.AspNetCore.Http;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.Api.Managers
 {
@@ -28,23 +29,35 @@ namespace Chat.Api.Managers
         public async Task<List<UserDto>>? GetAllUsers()
         {
             var dtos = _memoryCacheManager.GetDtos(Key);
-            if(dtos is not null)
+            if (dtos is not null)
             {
                 return (List<UserDto>)dtos;
             }
 
-            var users = await _unitOfWork.userIntegration.GetAllUsers();
+            var users = await _unitOfWork.UserRepository.GetAllUsers();
             await Set();
             return users.ParseToDtos();
         }
 
+        public async Task<List<UserDto>> GetAllCopyUsers()
+        {
+            var copyUsers = await _unitOfWork.UserRepository.GetAllUsers();
+            var users = new List<UserDto>();
+            foreach (var user in copyUsers) 
+            {
+                users.Add(user.Adapt<UserDto>());
+            }
+            return users;
+        }
+
+
         public async Task<UserDto> GetUserById(Guid userId)
         {
             var dtos = _memoryCacheManager.GetDtos(Key);
-            if(dtos is not null)
+            if (dtos is not null)
             {
                 List<UserDto> userDtos = (List<UserDto>)dtos;
-                
+
                 var userDto = userDtos.SingleOrDefault(u => u.Id == userId);
 
                 if (userDto is null)
@@ -54,7 +67,7 @@ namespace Chat.Api.Managers
                 return userDto;
             }
 
-            var user = await _unitOfWork.userIntegration.GetUserById(userId);
+            var user = await _unitOfWork.UserRepository.GetUserById(userId);
             await Set();
             return user.ParseToDto();
         }
@@ -66,26 +79,26 @@ namespace Chat.Api.Managers
             {
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                UserName = model.UserName,
+                Username = model.UserName,
                 Gender = GetGender(model.Gender),
                 Role = UserConstants.UserRole
             };
 
-            if (user.UserName == "super-admin")
+            if (user.Username == "super-admin")
             {
                 user.Role = UserConstants.AdminRole;
             }
 
             var passwordHash = new PasswordHasher<User>().HashPassword(user, model.Password);
             user.PasswordHash = passwordHash;
-            await _unitOfWork.userIntegration.AddUser(user);
+            await _unitOfWork.UserRepository.AddUser(user);
 
             return user.ParseToDto();
         }
 
         public async Task<string> Login(LoginModel model)
         {
-            var user = await _unitOfWork.userIntegration.GetUserByUserName(model.Username);
+            var user = await _unitOfWork.UserRepository.GetUserByUserName(model.Username);
             if (user is null)
                 throw new Exception("Username is invalid");
             var result = new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, model.Password);
@@ -94,7 +107,7 @@ namespace Chat.Api.Managers
             if (string.IsNullOrEmpty(user.Role))
             {
                 user.Role = UserConstants.UserRole;
-                await _unitOfWork.userIntegration.UpdateUser(user);
+                await _unitOfWork.UserRepository.UpdateUser(user);
             }
             var token = _jwtManager.GenerateToken(user);
             return token;
@@ -102,18 +115,18 @@ namespace Chat.Api.Managers
 
         public async Task<byte[]> AddOrUpdatePhoto(Guid userId, IFormFile file)
         {
-            var user = await _unitOfWork.userIntegration.GetUserById(userId);
+            var user = await _unitOfWork.UserRepository.GetUserById(userId);
             StaticHelper.IsPhoto(file);
             var data = StaticHelper.GetData(file);
             user.PhotoData = data;
-            await _unitOfWork.userIntegration.UpdateUser(user);
+            await _unitOfWork.UserRepository.UpdateUser(user);
             await Set();
             return data;
         }
 
         private async Task CheckForExist(string username)
         {
-            var user = await _unitOfWork.userIntegration.GetUserByUserName(username);
+            var user = await _unitOfWork.UserRepository.GetUserByUserName(username);
             if (user is not null)
             {
                 throw new UserExistExeption();
@@ -132,12 +145,12 @@ namespace Chat.Api.Managers
 
         public async Task<UserDto> UpdateBio(Guid userId, string bio)
         {
-            var user = await _unitOfWork.userIntegration.GetUserById(userId);
+            var user = await _unitOfWork.UserRepository.GetUserById(userId);
             if (!string.IsNullOrEmpty(bio))
             {
 
                 user.Bio = bio;
-                await _unitOfWork.userIntegration.UpdateUser(user);
+                await _unitOfWork.UserRepository.UpdateUser(user);
             }
             await Set();
             return user.ParseToDto();
@@ -145,7 +158,7 @@ namespace Chat.Api.Managers
 
         public async Task<UserDto> UpdateUserGeneralInfo(Guid userId, UpdateUserGeneralInfo info)
         {
-            var user = await _unitOfWork.userIntegration.GetUserById(userId);
+            var user = await _unitOfWork.UserRepository.GetUserById(userId);
             bool check = false;
             if (!string.IsNullOrEmpty(info.Firstname))
             {
@@ -177,7 +190,7 @@ namespace Chat.Api.Managers
 
             if (check)
             {
-                await _unitOfWork.userIntegration.UpdateUser(user);
+                await _unitOfWork.UserRepository.UpdateUser(user);
                 await Set();
             }
 
@@ -186,20 +199,22 @@ namespace Chat.Api.Managers
 
         public async Task<UserDto> UpdateUserName(Guid userId, UpdateUserNameModel model)
         {
-            var user = await _unitOfWork.userIntegration.GetUserById(userId);
+            var user = await _unitOfWork.UserRepository.GetUserById(userId);
             await CheckForExist(model.UserName);
-            user.UserName = model.UserName;
-            await _unitOfWork.userIntegration.UpdateUser(user);
+            user.Username = model.UserName;
+            await _unitOfWork.UserRepository.UpdateUser(user);
             await Set();
             return user.ParseToDto();
         }
 
+
+
         private async Task Set()
         {
-            var users = await _unitOfWork.userIntegration.GetAllUsers();
+            var users = await _unitOfWork.UserRepository.GetAllUsers();
             _memoryCacheManager.GetOrUpdateDtos(Key, users.ParseToDtos());
         }
-         
+
     }
 
 }

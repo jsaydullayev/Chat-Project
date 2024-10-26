@@ -3,18 +3,16 @@ using Chat.Api.Managers;
 using Chat.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata;
-
 namespace Chat.Api.Controllers
-{ 
-    [Route("api/users/user_id/chats/{chatId}/[controller]")] 
+{
+    [Route("api/users/user_id/chats/{chatId}/[controller]")]
     [ApiController]
     public class MessagesController : ControllerBase
     {
         private readonly MessageManager _messageManager;
         private readonly UserHelper _userHelper;
 
-        public MessagesController(MessageManager messageManager,UserHelper userHelper)
+        public MessagesController(MessageManager messageManager, UserHelper userHelper)
         {
             _messageManager = messageManager;
             _userHelper = userHelper;
@@ -35,7 +33,7 @@ namespace Chat.Api.Controllers
             }
         }
 
-        [Authorize(Roles ="admin,user")]
+        [Authorize(Roles = "admin,user")]
         [HttpGet("/api/messages/{messageId:int}")]
         public async Task<IActionResult> GetMessageById(int messageId)
         {
@@ -49,7 +47,7 @@ namespace Chat.Api.Controllers
                 return BadRequest(e.Message);
             }
 
-
+        }
         [Authorize(Roles = "admin,user")]
         [HttpGet]
         public async Task<IActionResult> GetChatMessages(Guid userId)

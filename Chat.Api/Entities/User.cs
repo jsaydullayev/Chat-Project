@@ -10,7 +10,7 @@ public class User
     public string FirstName { get; set; }
     public string? LastName { get; set; }
     [Required]
-    public string UserName { get; set; }
+    public string Username { get; set; }
     [Required]
     public string PasswordHash { get; set; }
     [Required]
